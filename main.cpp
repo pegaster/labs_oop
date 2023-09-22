@@ -5,8 +5,6 @@ int main() {
     int m, n;
     std::cin >> n >> m;
 
-    int result {calculaclateAmmountOfBreaks(n, m)};
-    if (result != -1) {
-        std::cout << result << std::endl;
-    }
+    int result {tryCalculateAmmountOfBreaks(n, m)};
+    std::cout << result << std::endl;
 }

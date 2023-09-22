@@ -2,7 +2,7 @@
 #include "lib.h"
 #include <iostream>
 
-int calculaclateAmmountOfBreaks(int n, int m) {
+int calculateAmmountOfBreaks(int n, int m) {
     validateInputData(n, m);
     return (m - 1) + (n - 1);
 }
@@ -19,9 +19,8 @@ void validateInputData(int n, int m) {
 
 int tryCalculateAmmountOfBreaks(int n, int m) {
     try {
-        return calculaclateAmmountOfBreaks(n, m);
+        return calculateAmmountOfBreaks(n, m);
     } catch (const std::invalid_argument &e) {
-        std::cerr << e.what();
-        return -1;
+        return 0; // это строго по условию
     }
 }

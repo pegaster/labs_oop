@@ -2,7 +2,7 @@
 #include <string>
 #include "../include/lib.h"
 
-TEST(calculaclateAmmountOfBreaksTest, Should9) {
+TEST(calculateAmmountOfBreaksTest, Should9) {
   // arrange 
   int n {5};
   int m {6};
@@ -10,14 +10,14 @@ TEST(calculaclateAmmountOfBreaksTest, Should9) {
   // act
   int result;
   EXPECT_NO_THROW({
-    result = calculaclateAmmountOfBreaks(n, m);
+    result = calculateAmmountOfBreaks(n, m);
   });
 
   // assert
   EXPECT_EQ(result, 9);
 }
 
-TEST(calculaclateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionN) {
+TEST(calculateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionN) {
   // arrange 
   int n {-5};
   int m {6};
@@ -25,42 +25,42 @@ TEST(calculaclateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionN) {
   // act
   int result;
   EXPECT_THROW({
-    result = calculaclateAmmountOfBreaks(n, m);
+    result = calculateAmmountOfBreaks(n, m);
   }, std::invalid_argument);
 }
 
-TEST(calculaclateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionM) {
+TEST(calculateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionM) {
   // arrange 
   int n {5};
   int m {-6};
 
   // act
   EXPECT_THROW({
-    calculaclateAmmountOfBreaks(n, m);
+    calculateAmmountOfBreaks(n, m);
   }, std::invalid_argument);
 }
 
-TEST(calculaclateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionCheckMessageN) {
+TEST(calculateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionCheckMessageN) {
   // arrange 
   int n {-5};
   int m {6};
 
   // act
   try {
-    calculaclateAmmountOfBreaks(n, m);
+    calculateAmmountOfBreaks(n, m);
   } catch (std::exception& ex) {
     EXPECT_STREQ("n must be greater than 0", ex.what());
   }
 }
 
-TEST(calculaclateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionCheckMessageM) {
+TEST(calculateAmmountOfBreaksTest, ShouldThrowInvalidArgumnetExceptionCheckMessageM) {
   // arrange 
   int n {5};
   int m {-6};
 
   // act
   try {
-    calculaclateAmmountOfBreaks(n, m);
+    calculateAmmountOfBreaks(n, m);
   } catch (std::exception& ex) {
     EXPECT_STREQ("m must be greater than 0", ex.what());
   }
