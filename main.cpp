@@ -1,10 +1,10 @@
 #include <iostream>
-
-#include "lib.h"
+#include "Point.h"
+#include "FigureList.h"
 
 using namespace std;
 
 int main() {
-    cout << "Bruh: " << endl
-         << A() << endl;
+    FigureList l{2};
+    cin >> l;
 }
