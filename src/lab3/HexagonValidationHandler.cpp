@@ -3,10 +3,21 @@
 #include "Figure.h"
 #include <math.h>
 
-void HexagonValidationHandler::hadleRequest(const Figure &figure) const {
+const double EPS = 1e-9;
+
+bool HexagonValidationHandler::isAllowedTo(const Figure& fugure) const {
+    try {
+        dynamic_cast<const Hexagon &>(fugure);
+    } catch (const std::bad_cast &e) {
+        return false;
+    }
+    return true;
+}
+
+void HexagonValidationHandler::hadleRequest(const Figure& figure) const {
     for (int i = 0; i < 6; i++) {
-        if (abs(figure.getPoints()[(i + 1) % 6] - figure.getPoints()[i]) <= epsilon) {
-            throw std::invalid_argument("zero length side");
+        if (abs(figure.getPoints()[(i + 1) % 6] - figure.getPoints()[i]) <= EPS) {
+            throw std::invalid_argument("The side with 0 length found");
         }
     }
 
@@ -32,13 +43,4 @@ void HexagonValidationHandler::hadleRequest(const Figure &figure) const {
             }
         }
     }
-}
-
-bool HexagonValidationHandler::isAllowedTo(const Figure &figure) const {
-    try {
-        dynamic_cast<const Hexagon &>(figure);
-    } catch (const std::bad_cast &e) {
-        return false;
-    }
-    return true;
 }

@@ -1,13 +1,23 @@
 #include "OctagonValidationHandler.h"
 #include "Octagon.h"
 #include "Figure.h"
-#include "Figure.h"
 #include <math.h>
 
-void OctagonValidationHandler::hadleRequest(const Figure &figure) const {
+const double EPS = 1e-9;
+
+bool OctagonValidationHandler::isAllowedTo(const Figure& fugure) const {
+    try {
+        dynamic_cast<const Octagon &>(fugure);
+    } catch (const std::bad_cast &e) {
+        return false;
+    }
+    return true;
+}
+
+void OctagonValidationHandler::hadleRequest(const Figure& figure) const {
     for (int i = 0; i < 8; i++) {
-        if (abs(figure.getPoints()[(i + 1) % 8] - figure.getPoints()[i]) <= epsilon) {
-            throw std::invalid_argument("zero length side");
+        if (abs(figure.getPoints()[(i + 1) % 8] - figure.getPoints()[i]) <= EPS) {
+            throw std::invalid_argument("The side with 0 length found");
         }
     }
 
@@ -33,13 +43,4 @@ void OctagonValidationHandler::hadleRequest(const Figure &figure) const {
             }
         }
     }
-}
-
-bool OctagonValidationHandler::isAllowedTo(const Figure &figure) const {
-    try {
-        dynamic_cast<const Octagon &>(figure);
-    } catch (const std::bad_cast &e) {
-        return false;
-    }
-    return true;
 }

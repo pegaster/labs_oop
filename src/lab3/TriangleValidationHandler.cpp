@@ -2,11 +2,21 @@
 #include "Triangle.h"
 #include "Figure.h"
 
+const double EPS = 1e-9;
 
-void TriangleValidationHandler::hadleRequest(const Figure &figure) const {
+bool TriangleValidationHandler::isAllowedTo(const Figure& fugure) const {
+    try {
+        dynamic_cast<const Triangle &>(fugure);
+    } catch (const std::bad_cast &e) {
+        return false;
+    }
+    return true;
+}
+
+void TriangleValidationHandler::hadleRequest(const Figure& figure) const {
     for (int i = 0; i < 3; i++) {
-        if (abs(figure.getPoints()[(i + 1) % 3] - figure.getPoints()[i]) <= epsilon) {
-            throw std::invalid_argument("neighbor sides are parallel");
+        if (abs(figure.getPoints()[(i + 1) % 3] - figure.getPoints()[i]) <= EPS) {
+            throw std::invalid_argument("The side with 0 length found");
         }
     }
 
@@ -15,13 +25,4 @@ void TriangleValidationHandler::hadleRequest(const Figure &figure) const {
             throw std::invalid_argument("neighbor sides are parallel");
         }
     }
-}
-
-bool TriangleValidationHandler::isAllowedTo(const Figure &figure) const {
-    try {
-        dynamic_cast<const Triangle &>(figure);
-    } catch (const std::bad_cast &e) {
-        return false;
-    }
-    return true;
 }
