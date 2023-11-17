@@ -1,133 +1,162 @@
 #include "Octagon.h"
 #include "Point.h"
 #include "ValidationCompositor.h"
-#include <math.h>
+#include <memory>
+#include "NumberConcept.h"
 
-Octagon::Octagon() {
-    points_ = new Point[8];
+template<Number T> Octagon<T>::Octagon(){
+    this->points = std::shared_ptr<Point<T>>(new Point<T>[8]);
+    this->figureName = "Octagon";
 }
 
-Octagon::Octagon(const Point* points) {
-    points_ = new Point[8];
-    for (int i = 0; i < 8; ++i) {
-        points_[i] = points[i];
+// std::string Octagon::getFigureName() const{
+//     return figu
+// }
+
+template<Number T> Octagon<T>::Octagon(const std::shared_ptr<Point<T>> points){
+    this->points = std::shared_ptr<Point<T>>(new Point<T>[8]);
+    this->figureName = "Octagon";
+    for (int i = 0; i < 8; ++i){
+        this->points.get()[i] = points.get()[i];
     }
+    ValidationCompositor<T> validator;
+    validator.validate(dynamic_cast<Figure<T>&>(*this));
+    
 
-    ValidationCompositor validator;
-    validator.validate(dynamic_cast<Figure&>(*this));
 }
 
-Figure* Octagon::create(const Point* points) {
-    return dynamic_cast<Figure*>(new Octagon(points));
+template<Number T> Octagon<T> Octagon<T>::create(const std::shared_ptr<Point<T>> points){
+    return Octagon<T>{points};
 }
 
-Octagon& Octagon::operator=(const Octagon& other) {
-    for (int i = 0; i < 8; i++) {
-        points_[i] = other.points_[i];
+template<Number T> Octagon<T>::Octagon(const Octagon<T>& other){
+   this->points = std::shared_ptr<Point<T>>(new Point<T>[8]);
+    for (int i = 0; i < 8; ++i){
+        this->points.get()[i] = other.points.get()[i];
     }
+    //fillPoints(8,points, other.points);
+}
+
+template<Number T> Octagon<T>::Octagon(Octagon<T>&& other){
+    this->points = other.points;
+    // delete[] other.points;
+    // other.points = nullptr;
+
+}
+
+template<Number T> Octagon<T>& Octagon<T>::operator=(Octagon<T>& other){
+    //delete[] points;
+   this->points = std::shared_ptr<Point<T>>(new Point<T>[8]);
+    for (int i = 0; i < 8; ++i){
+        this->points.get()[i] = other.points.get()[i];
+    }
+    // fillPoints(8,points,other.points);
     return *this;
 }
 
-Octagon& Octagon::operator=(Octagon&& other) {
-    if (points_ != nullptr) {
-        delete[] points_;
-    }
-    points_ = other.points_;
-    delete[] other.points_;
-    other.points_=nullptr;
+template<Number T> Octagon<T>& Octagon<T>::operator=(Octagon<T>&& other){
+    this->points = other.points;
+    // delete[] other.points;
+    // other.points=nullptr;
     return *this;
 }
 
-bool Octagon::operator==(const Octagon& other) const {
-    for (int i = 0; i < 8; i++) {
-        bool flag = true;
-        for (int j = 0; j < 8; j++) {
-            if (!((points_[(i + j) % 8] - points_[i]) == (other.points_[j] - other.points_[0]))) {
-                flag = false;
-                break;
+template<Number T> bool Octagon<T>::operator==(Octagon<T>& other){
+    for (int i = 0; i < 8; ++i){
+        int flag = 0;
+        for (int j =0; j < 8; ++j){
+            if ((this->points.get()[i].getX() == other.points.get()[i].getX()) && (this->points.get()[i].getY() == other.points.get()[i].getY())){
+                flag = 1;
             }
         }
-        if (flag) {
-            return true;
+        if (flag == 0){
+            return false;
         }
     }
-    
-    return false;
+    return true;
 }
 
-Figure& Octagon::operator=(Figure&& other) {
+template<Number T> Figure<T>& Octagon<T>::operator=(const Figure<T>&& other){
     try{
-        Octagon&& other_Octagon = dynamic_cast<Octagon&&>(other);
-        return *this = other_Octagon;
+        const Octagon<T>&& other_pentagon = dynamic_cast<const Octagon<T>&&>(other);
+        return *this = other_pentagon;
     }
-    catch(const std::bad_cast &e) {
-        throw std::invalid_argument("exepted Trap");
+    catch(const std::bad_cast &e){
+        throw std::invalid_argument("exepted Octagon");
 
     }
     
 }
-Figure& Octagon::operator=(const Figure& other) {
+template<Number T> Figure<T>& Octagon<T>::operator=(const Figure<T>& other){
     try{
-        const Octagon& other_Octagon = dynamic_cast<const Octagon&>(other);
-        return *this = other_Octagon;
+        const Octagon<T>& other_pentagon = dynamic_cast<const Octagon<T>&>(other);
+        return *this = other_pentagon;
     }
-    catch(const std::bad_cast &e) {
+    catch(const std::bad_cast &e){
         throw std::invalid_argument("exepted Octagon");
 
     }
 }
 
-bool Octagon::operator==(const Figure& other) const {
+template<Number T> bool Octagon<T>::operator==(const Figure<T>& other){
     try{
-        const Octagon& other_Octagon = dynamic_cast<const Octagon&>(other);
-        return *this== other_Octagon;
+        const Octagon<T>& other_pentagon = dynamic_cast<const Octagon<T>&>(other);
+        return *this== other_pentagon;
     }
-    catch(const std::bad_cast &e) {
+    catch(const std::bad_cast &e){
         return false;
     }
 }
 
-Point Octagon::getRotationCenter() const {
-    double x = 0, y = 0;
-    for (int i = 0; i < 8; i++) {
-        x += points_[i].getX();
-        y += points_[i].getY();
+template<Number T> Point<T> Octagon<T>::center()const{
+    T Xsum = 0;
+    T Ysum = 0;
+    for(int i = 0; i < 8; ++i){
+        Xsum += this->points.get()[i].getX();
+        Ysum += this->points.get()[i].getY();
     }
+    Point<T> center;
+    center.setX(Xsum / 8); 
+    center.setY(Ysum / 8);
 
-    return Point(x / 8, y / 8);
+    return center;
+
 }
 
-Octagon::operator double() const {
+template<Number T> Octagon<T>::operator double() const{
     double s = 0;
     for (int i = 0; i < 8; i++) {
-        s += points_[i].getX() * points_[(i + 1) % 8].getY() - points_[i].getY() * points_[(i + 1) % 8].getX();
+        s += this->points.get()[i].getX() * this->points.get()[(i + 1) % 8].getY() - this->points.get()[i].getY() * this->points.get()[(i + 1) % 8].getX();
     }
     return fabs(s / 2);
 }
 
 
-std::ostream& Octagon::print(std::ostream& os) const {
-    for (int i = 0; i < 8; ++i) {
-        os << points_[i];
-        if (i < 8 - 1) {
-            os << std::endl;
-        }
+template<Number T>void Octagon<T>::fillPoints(const int pointsAmount,Point<T>* res,const Point<T>* data){
+     for (int i = 0; i < 8; ++ i){
+        res[i] = data[i];
     }
-    os << std::endl;
+}
+
+
+template<Number T> std::ostream& Octagon<T>::print(std::ostream& os) const{
+    for (int i = 0; i < 8; ++i){
+        os << this->points.get()[i] << "\n";
+    }
     return os;
     
 }
-std::istream& Octagon::read(std::istream& is) {
-    for (int i = 0; i < 8; ++i) {
-        is >> points_[i];
+template<Number T> std::istream& Octagon<T>::read(std::istream& is){
+    for (int i = 0; i < 8; ++i){
+        is >> this->points.get()[i];
     }
     return is;
 }
 
-std::ostream& operator<<(std::ostream& os, const Octagon& figure) {
+template<Number T> std::ostream& operator<<(std::ostream& os, const Octagon<T>& figure){
     return figure.print(std::cout);
 }
 
-std::istream& operator>>(std::istream& is, Octagon& figure) {
+template<Number T> std::istream& operator>>(std::istream& is, Octagon<T>& figure){
     return figure.read(std::cin);
 }

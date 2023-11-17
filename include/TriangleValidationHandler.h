@@ -1,10 +1,8 @@
 #pragma once
 #include "ValidationHandler.h"
-#include "Figure.h"
-#include <stdexcept>
 
-class TriangleValidationHandler : public ValidationHandler {
+template <class T> class TriangleValidationHandler: public ValidationHandler<T>{
     public:
-        void hadleRequest(const Figure &figure) const override;
-        bool isAllowedTo(const Figure &figure) const override;
+        void validate(const Figure<T>& figure1) const  override;
+        bool isAllowed(const Figure<T>& fugure) const override;
 };

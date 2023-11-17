@@ -1,17 +1,18 @@
 #pragma once
-#include <iostream>
 #include "Figure.h"
-
-class FigureList {
-    protected:
-        Figure **data_;
-        size_t size_;
+#include <memory>
+#include <vector>
+#include "NumberConcept.h"
+template<Number T> class FigureList{
+    private:
+        int size;
+        int capacity;
+        T* figures;
     public:
         FigureList();
-        FigureList(size_t n);
-        Figure*&operator[](size_t i);
-        size_t getSize();
         ~FigureList();
+        void push_back(T figure);
+        void remove(int index);
+        int getSize() const;
+        T operator [](const int index) const;
 };
-
-std::istream& operator>>(std::istream& is, FigureList& dinList);

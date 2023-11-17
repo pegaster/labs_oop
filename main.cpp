@@ -5,6 +5,5 @@
 using namespace std;
 
 int main() {
-    FigureList l{2};
-    cin >> l;
+    FigureList<double> l{2};
 }

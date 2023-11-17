@@ -1,14 +1,18 @@
 #pragma once
-#include <vector>
+#include "HexagonValidationHandler.h"
+#include "OctagonValidationHandler.h"
+#include "TriangleValidationHandler.h"
 #include "ValidationHandler.h"
 #include "Figure.h"
-#include <stdexcept>
+#include <vector>
 
-class ValidationCompositor {
+
+template<class T>class ValidationCompositor{
     private:
-        std::vector<const ValidationHandler *> validators;
+        std::vector<std::shared_ptr<ValidationHandler<T>>> validations;
+
     public:
-        ValidationCompositor();
-        void validate(const Figure &figure) const;
-        virtual ~ValidationCompositor();
+    ValidationCompositor();
+    virtual ~ValidationCompositor() = default;
+    void validate(Figure<T>& figure) const;
 };

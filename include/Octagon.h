@@ -1,30 +1,41 @@
 #pragma once
 #include "Figure.h"
+#include "NumberConcept.h"
 
-class Octagon : public Figure {
-    friend std::ostream& operator<<(std::ostream& os, const Octagon& figure);
-    friend std::istream& operator>>(std::istream& is, Octagon& figure);
+template<Number T> class Octagon : public Figure<T>{
+    template <Number U> friend std::ostream& operator<<(std::ostream& os, const Octagon<U>& figure);
+    template<Number U> friend std::istream& operator>>(std::istream& is, Octagon<U>& figure);
     public:
         Octagon();
-        Octagon(const Point* points);
+        Octagon(const std::shared_ptr<Point<T>> points);
+        Octagon(const Octagon<T>& other);
+        Octagon(Octagon<T>&& other);
 
         virtual ~Octagon() = default;
-        static Figure* create(const Point* points);
+
+        // std::string getFigureName() const;
+        // Point* getPoints() const;
+        static Octagon<T> create(const std::shared_ptr<Point<T>> points);
         
         virtual std::ostream& print(std::ostream& os) const override;
         virtual std::istream& read(std::istream& is) override;
 
         virtual operator double() const override;
-        virtual Point getRotationCenter() const override;
+        virtual Point<T> center() const override;
         
-        Octagon& operator=(const Octagon& other);
-        Octagon& operator=(Octagon&& other);
-        bool operator==(const Octagon& other) const;
+        Octagon<T>& operator=(Octagon<T>& other);
+        Octagon<T>& operator=(Octagon<T>&& other);
+        bool operator==(Octagon<T>& other);
 
-        virtual Figure& operator=(Figure&& other) override;
-        virtual Figure& operator=(const Figure& other) override;
-        virtual bool operator==(const Figure& other) const override;
+        virtual Figure<T>& operator=(const Figure<T>&& other) override;
+        virtual Figure<T>& operator=(const Figure<T>& other) override;
+        virtual bool operator==(const Figure<T>& other) override;
+
+    private:
+        // std::string figureName = "Octagon";
+        void fillPoints(const int pointsAmount,Point<T>* res,const Point<T>* data) override;
 };
-
-std::ostream& operator<<(std::ostream& os, const Octagon& figure);
-std::istream& operator>>(std::istream& is, Octagon& figure);
+template<Number T>
+std::ostream& operator<<(std::ostream& os, const Octagon<T>& figure);
+template<Number T>
+std::istream& operator>>(std::istream& is, Octagon<T>& figure);

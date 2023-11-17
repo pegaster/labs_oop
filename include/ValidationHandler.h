@@ -1,9 +1,9 @@
 #pragma once
-#include "Figure.h"
+#include <Figure.h>
+#include <vector>
 
-class ValidationHandler {
+template< class T>class ValidationHandler{
     public:
-        virtual void hadleRequest(const Figure &figure) const = 0;
-        virtual bool isAllowedTo(const Figure &figure) const = 0;
-        virtual ~ValidationHandler() = default;
+        virtual void validate(const Figure<T>& figure1) const = 0;
+        virtual bool isAllowed(const Figure<T>& fugure) const = 0;
 };

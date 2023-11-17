@@ -1,25 +1,26 @@
 #include "ValidationCompositor.h"
-#include "ValidationHandler.h"
+#include <vector>
 #include "TriangleValidationHandler.h"
-#include "OctagonValidationHandler.h"
 #include "HexagonValidationHandler.h"
+#include "OctagonValidationHandler.h"
+#include <memory>
 
-ValidationCompositor::ValidationCompositor() {
-    validators.push_back(dynamic_cast<ValidationHandler *>(new TriangleValidationHandler()));
-    validators.push_back(dynamic_cast<ValidationHandler *>(new OctagonValidationHandler()));
-    validators.push_back(dynamic_cast<ValidationHandler *>(new HexagonValidationHandler()));
-}
 
-void ValidationCompositor::validate(const Figure &figure) const {
-    for (const ValidationHandler* validator : validators) {
-        if (validator->isAllowedTo(figure)) {
-            validator->hadleRequest(figure);
+template<class T> void ValidationCompositor<T>::validate(Figure<T>& figure) const{
+    for (std::shared_ptr<ValidationHandler<T>> validator : validations){
+       // VaLidationHandler* validator = validations[i];
+       
+        if (validator.get()->isAllowed(figure)){
+            validator.get()->validate(figure);
+            return;
         }
     }
 }
 
-ValidationCompositor::~ValidationCompositor() {
-    for (const ValidationHandler* validator : validators) {
-        delete validator;
-    }
+template<class T> ValidationCompositor<T>::ValidationCompositor(){
+   
+    validations.push_back(  std::shared_ptr< ValidationHandler<T> >(dynamic_cast<ValidationHandler<T> *>(new TriangleValidationHandler<T>())));
+    validations.push_back(  std::shared_ptr< ValidationHandler<T> >(dynamic_cast<ValidationHandler<T> *>(new HexagonValidationHandler<T>())));
+    validations.push_back(  std::shared_ptr< ValidationHandler<T> >(dynamic_cast<ValidationHandler<T> *>(new OctagonValidationHandler<T>())));
+
 }

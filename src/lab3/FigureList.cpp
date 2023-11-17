@@ -1,55 +1,58 @@
 #include "FigureList.h"
-#include "Triangle.h"
-#include "Octagon.h"
-#include "Hexagon.h"
-#include <string>
-
-FigureList::FigureList() {
-    size_ = 0;
-    data_ = nullptr;
+#include "Figure.h"
+#include "NumberConcept.h"
+#include <memory>
+template<Number T> FigureList<T>::FigureList(){
+    this->size = 0;
+    this->capacity = 10;
+    
+    // std::shared_ptr<std::shared_ptr<Figure<T>>> figures;
+    this->figures = new T[this->capacity];
+   
 }
 
-FigureList::FigureList(size_t n) {
-    if (n <= 0) {
-        throw std::invalid_argument("Invalid size");
+template<Number T> FigureList<T>::~FigureList(){
+    this->size = 0;
+    this->capacity = 0;
+    // for (int i = 0;i < size; ++i){
+    //     delete figures[i];
+    // }
+    // delete[] figures;
+    // figures = nullptr;
+}
+
+template<Number T> void FigureList<T>::push_back(T figure){
+    if (size + 2 > capacity){
+        capacity *= 2;
+       T* newFigures = new T[this->capacity];
+        for (int i = 0; i < size; ++i){
+            newFigures[i] = figures[i];
+        }
+        figures = newFigures;
     }
-    size_ = n;
-    data_ = new Figure*[size_];
+
+    figures[size++] = figure;
+
 }
 
-Figure*& FigureList::operator[](size_t i) {
-    if (i < 0 || i >= size_) {
+ template<Number T> T FigureList<T>::operator [](const int index) const{
+    if (index >= size || index < 0){
         throw std::invalid_argument("Invalid index");
     }
-    return data_[i];
-}
+    return figures[index];
+ }
 
-size_t FigureList::getSize() {
-    return size_;
-}
-
-FigureList::~FigureList() {
-    for (size_t i = 0; i < size_; i++) {
-        delete data_[i];
+template<Number T> void FigureList<T>::remove(int index){
+    if (index >= size || index < 0){
+        throw std::invalid_argument("Invalid index");
     }
-    delete[] data_;
+    for (int i = index; i < size; ++i){
+        // delete figures[i];
+        figures[i] = figures[i+1];
+    }
+    size--;
 }
 
-std::istream& operator>>(std::istream& is, FigureList& FigureList) {
-    for (size_t i = 0; i < FigureList.getSize(); i++) {
-        std::string figureFigureype;
-        is >> figureFigureype;
-        if (figureFigureype == "triangle" || figureFigureype == "Triangle") {
-            FigureList[i] = new Triangle();
-        } else if (figureFigureype == "octagon" || figureFigureype == "Octagon") {
-            FigureList[i] = new Octagon();
-        } else if (figureFigureype == "hexagon" || figureFigureype == "Hexagon") {
-            FigureList[i] = new Hexagon();
-        } else {
-            throw std::invalid_argument("Invalid figure type");
-        }
-
-        is >> *FigureList[i];
-    }
-    return is;
+template<Number T> int FigureList<T>::getSize() const {
+    return size;
 }

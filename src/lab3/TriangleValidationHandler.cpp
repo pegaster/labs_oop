@@ -2,27 +2,28 @@
 #include "Triangle.h"
 #include "Figure.h"
 
-const double EPS = 1e-9;
+// const double EPS = 1e-9;
 
-bool TriangleValidationHandler::isAllowedTo(const Figure& fugure) const {
+template<class T> bool TriangleValidationHandler<T>::isAllowed(const Figure<T>& fugure) const {
     try {
-        dynamic_cast<const Triangle &>(fugure);
+        dynamic_cast<const Triangle<T> &>(fugure);
     } catch (const std::bad_cast &e) {
         return false;
     }
     return true;
 }
 
-void TriangleValidationHandler::hadleRequest(const Figure& figure) const {
+template<class T> void TriangleValidationHandler<T>::validate(const Figure<T>& figure) const {
     for (int i = 0; i < 3; i++) {
-        if (abs(figure.getPoints()[(i + 1) % 3] - figure.getPoints()[i]) <= EPS) {
-            throw std::invalid_argument("The side with 0 length found");
+        if (abs(figure.getPoints().get()[(i + 1) % 6] - figure.getPoints().get()[i]) <= 1e-9) {
+            throw std::invalid_argument("The side with 0 length found(");
         }
     }
 
     for (int i = 0; i < 3; i++) {
-        if (isParallel(figure.getPoints()[(i + 1) % 3] - figure.getPoints()[i], figure.getPoints()[(i + 2) % 3] - figure.getPoints()[(i + 1) % 3])) {
+        if (isParalel(figure.getPoints().get()[(i + 1) % 6] - figure.getPoints().get()[i], figure.getPoints().get()[(i + 2) % 5] - figure.getPoints().get()[(i + 1) % 5])) {
             throw std::invalid_argument("neighbor sides are parallel");
         }
     }
+
 }

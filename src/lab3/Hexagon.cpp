@@ -1,133 +1,162 @@
 #include "Hexagon.h"
 #include "Point.h"
 #include "ValidationCompositor.h"
-#include <math.h>
+#include <memory>
+#include "NumberConcept.h"
 
-Hexagon::Hexagon() {
-    points_ = new Point[6];
+template<Number T> Hexagon<T>::Hexagon(){
+    this->points = std::shared_ptr<Point<T>>(new Point<T>[6]);
+    this->figureName = "Hexagon";
 }
 
-Hexagon::Hexagon(const Point* points) {
-    points_ = new Point[6];
-    for (int i = 0; i < 6; ++i) {
-        points_[i] = points[i];
+// std::string Hexagon::getFigureName() const{
+//     return figu
+// }
+
+template<Number T> Hexagon<T>::Hexagon(const std::shared_ptr<Point<T>> points){
+    this->points = std::shared_ptr<Point<T>>(new Point<T>[6]);
+    this->figureName = "Hexagon";
+    for (int i = 0; i < 6; ++i){
+        this->points.get()[i] = points.get()[i];
     }
+    ValidationCompositor<T> validator;
+    validator.validate(dynamic_cast<Figure<T>&>(*this));
+    
 
-    ValidationCompositor validator;
-    validator.validate(dynamic_cast<Figure&>(*this));
 }
 
-Figure* Hexagon::create(const Point* points) {
-    return dynamic_cast<Figure*>(new Hexagon(points));
+template<Number T> Hexagon<T> Hexagon<T>::create(const std::shared_ptr<Point<T>> points){
+    return Hexagon<T>{points};
 }
 
-Hexagon& Hexagon::operator=(const Hexagon& other) {
-    for (int i = 0; i < 6; i++) {
-        points_[i] = other.points_[i];
+template<Number T> Hexagon<T>::Hexagon(const Hexagon<T>& other){
+   this->points = std::shared_ptr<Point<T>>(new Point<T>[6]);
+    for (int i = 0; i < 6; ++i){
+        this->points.get()[i] = other.points.get()[i];
     }
+    //fillPoints(6,points, other.points);
+}
+
+template<Number T> Hexagon<T>::Hexagon(Hexagon<T>&& other){
+    this->points = other.points;
+    // delete[] other.points;
+    // other.points = nullptr;
+
+}
+
+template<Number T> Hexagon<T>& Hexagon<T>::operator=(Hexagon<T>& other){
+    //delete[] points;
+   this->points = std::shared_ptr<Point<T>>(new Point<T>[6]);
+    for (int i = 0; i < 6; ++i){
+        this->points.get()[i] = other.points.get()[i];
+    }
+    // fillPoints(6,points,other.points);
     return *this;
 }
 
-Hexagon& Hexagon::operator=(Hexagon&& other) {
-    if (points_ != nullptr) {
-        delete[] points_;
-    }
-    points_ = other.points_;
-    delete[] other.points_;
-    other.points_=nullptr;
+template<Number T> Hexagon<T>& Hexagon<T>::operator=(Hexagon<T>&& other){
+    this->points = other.points;
+    // delete[] other.points;
+    // other.points=nullptr;
     return *this;
 }
 
-bool Hexagon::operator==(const Hexagon& other) const {
-    for (int i = 0; i < 6; i++) {
-        bool flag = true;
-        for (int j = 0; j < 6; j++) {
-            if (!((points_[(i + j) % 6] - points_[i]) == (other.points_[j] - other.points_[0]))) {
-                flag = false;
-                break;
+template<Number T> bool Hexagon<T>::operator==(Hexagon<T>& other){
+    for (int i = 0; i < 6; ++i){
+        int flag = 0;
+        for (int j =0; j < 6; ++j){
+            if ((this->points.get()[i].getX() == other.points.get()[i].getX()) && (this->points.get()[i].getY() == other.points.get()[i].getY())){
+                flag = 1;
             }
         }
-        if (flag) {
-            return true;
+        if (flag == 0){
+            return false;
         }
     }
-    
-    return false;
+    return true;
 }
 
-Figure& Hexagon::operator=(Figure&& other) {
+template<Number T> Figure<T>& Hexagon<T>::operator=(const Figure<T>&& other){
     try{
-        Hexagon&& other_Hexagon = dynamic_cast<Hexagon&&>(other);
-        return *this = other_Hexagon;
+        const Hexagon<T>&& other_pentagon = dynamic_cast<const Hexagon<T>&&>(other);
+        return *this = other_pentagon;
     }
-    catch(const std::bad_cast &e) {
-        throw std::invalid_argument("exepted Trap");
+    catch(const std::bad_cast &e){
+        throw std::invalid_argument("exepted Hexagon");
 
     }
     
 }
-Figure& Hexagon::operator=(const Figure& other) {
+template<Number T> Figure<T>& Hexagon<T>::operator=(const Figure<T>& other){
     try{
-        const Hexagon& other_Hexagon = dynamic_cast<const Hexagon&>(other);
-        return *this = other_Hexagon;
+        const Hexagon<T>& other_pentagon = dynamic_cast<const Hexagon<T>&>(other);
+        return *this = other_pentagon;
     }
-    catch(const std::bad_cast &e) {
+    catch(const std::bad_cast &e){
         throw std::invalid_argument("exepted Hexagon");
 
     }
 }
 
-bool Hexagon::operator==(const Figure& other) const {
+template<Number T> bool Hexagon<T>::operator==(const Figure<T>& other){
     try{
-        const Hexagon& other_Hexagon = dynamic_cast<const Hexagon&>(other);
-        return *this== other_Hexagon;
+        const Hexagon<T>& other_pentagon = dynamic_cast<const Hexagon<T>&>(other);
+        return *this== other_pentagon;
     }
-    catch(const std::bad_cast &e) {
+    catch(const std::bad_cast &e){
         return false;
     }
 }
 
-Point Hexagon::getRotationCenter() const {
-    double x = 0, y = 0;
-    for (int i = 0; i < 6; i++) {
-        x += points_[i].getX();
-        y += points_[i].getY();
+template<Number T> Point<T> Hexagon<T>::center()const{
+    T Xsum = 0;
+    T Ysum = 0;
+    for(int i = 0; i < 6; ++i){
+        Xsum += this->points.get()[i].getX();
+        Ysum += this->points.get()[i].getY();
     }
+    Point<T> center;
+    center.setX(Xsum / 6); 
+    center.setY(Ysum / 6);
 
-    return Point(x / 6, y / 6);
+    return center;
+
 }
 
-Hexagon::operator double() const {
+template<Number T> Hexagon<T>::operator double() const{
     double s = 0;
     for (int i = 0; i < 6; i++) {
-        s += points_[i].getX() * points_[(i + 1) % 6].getY() - points_[i].getY() * points_[(i + 1) % 6].getX();
+        s += this->points.get()[i].getX() * this->points.get()[(i + 1) % 6].getY() - this->points.get()[i].getY() * this->points.get()[(i + 1) % 6].getX();
     }
     return fabs(s / 2);
 }
 
 
-std::ostream& Hexagon::print(std::ostream& os) const {
-    for (int i = 0; i < 6; ++i) {
-        os << points_[i];
-        if (i < 6 - 1) {
-            os << std::endl;
-        }
+template<Number T>void Hexagon<T>::fillPoints(const int pointsAmount,Point<T>* res,const Point<T>* data){
+     for (int i = 0; i < 6; ++ i){
+        res[i] = data[i];
     }
-    os << std::endl;
+}
+
+
+template<Number T> std::ostream& Hexagon<T>::print(std::ostream& os) const{
+    for (int i = 0; i < 6; ++i){
+        os << this->points.get()[i] << "\n";
+    }
     return os;
     
 }
-std::istream& Hexagon::read(std::istream& is) {
-    for (int i = 0; i < 6; ++i) {
-        is >> points_[i];
+template<Number T> std::istream& Hexagon<T>::read(std::istream& is){
+    for (int i = 0; i < 6; ++i){
+        is >> this->points.get()[i];
     }
     return is;
 }
 
-std::ostream& operator<<(std::ostream& os, const Hexagon& figure) {
+template<Number T> std::ostream& operator<<(std::ostream& os, const Hexagon<T>& figure){
     return figure.print(std::cout);
 }
 
-std::istream& operator>>(std::istream& is, Hexagon& figure) {
+template<Number T> std::istream& operator>>(std::istream& is, Hexagon<T>& figure){
     return figure.read(std::cin);
 }
