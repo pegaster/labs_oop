@@ -3,7 +3,10 @@
     "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 3, IncludeBlocks: Merge, IndentGotoLabels: true, KeepEmptyLinesAtTheStartOfBlocks: true}",
     "C_Cpp.errorSquiggles": "enabled",
     "files.associations": {
+        ".env*": "dotenv",
         "random": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "iosfwd": "cpp",
+        "memory": "cpp"
     }
 }
